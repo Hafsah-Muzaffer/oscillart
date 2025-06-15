@@ -5,7 +5,6 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var width = ctx.canvas.width;
 var height = ctx.canvas.height;
-var amplitude = 40;
 var interval = null;
 var counter = 0;
 var x;
@@ -14,6 +13,8 @@ var reset = false;
 var freq = 0;
 var timepernote = 0;
 var length = 0;
+
+const waveform_selector = document.getElementById('waveform');
 
 //create web audio api elements
 const audioCtx = new AudioContext();
@@ -37,11 +38,27 @@ notes.set("G", 392.0);
 notes.set("A", 440);
 notes.set("B", 493.9);
 
+const vol_slider = document.getElementById('vol_slider');
+
 function frequency(pitch) {
     freq = pitch / 10000;
-    gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-    oscillator.frequency.setValueAtTime(pitch, audioCtx.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + (timepernote/1000)-0.1);
+
+        const newOsc = audioCtx.createOscillator();
+    const waveformType = waveform_selector.value;
+    newOsc.type = waveformType;
+    newOsc.frequency.setValueAtTime(pitch, audioCtx.currentTime);
+
+    const newGain = audioCtx.createGain();
+    newGain.gain.setValueAtTime(vol_slider.value, audioCtx.currentTime);
+
+    newOsc.connect(newGain);
+    newGain.connect(audioCtx.destination);
+
+    newOsc.start();
+    setTimeout(() => {
+        newGain.gain.setValueAtTime(0, audioCtx.currentTime);
+        newOsc.stop();
+    }, ((timepernote)-10));
 }
 
 function handle() {
@@ -86,17 +103,28 @@ function drawWave() {
         ctx.clearRect(0, 0, width, height);
         x = 0;
         y = height/2;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
+        ctx.moveTo(x, y); 
+        ctx.beginPath()
     }
     counter = 0;
     interval = setInterval(line, 20);
     reset = false;
 }
 
+const color1 = document.getElementById('color1');
+const color2 = document.getElementById('color2');
 
 function line() {
-    y = height/2 + (amplitude * Math.sin(x*2*Math.PI*freq*(length*0.5)));
+    y = height/2 + (vol_slider.value * Math.sin(x*2*Math.PI*freq*(length*0.5)));
+
+    const startColor = color1.value;
+    const endColor = color2.value;
+    const gradient = ctx.createLinearGradient(0, 0, width, 0); 
+
+    gradient.addColorStop(0, startColor);
+    gradient.addColorStop(1, endColor);
+
+    ctx.strokeStyle = gradient;
     ctx.lineTo(x,y);
     ctx.stroke();
     x = x + 1;
@@ -106,5 +134,3 @@ function line() {
         clearInterval(interval);
     }
 }
-
-
