@@ -14,6 +14,7 @@ var freq = 0;
 var timepernote = 0;
 var length = 0;
 
+
 const waveform_selector = document.getElementById('waveform');
 
 //create web audio api elements
@@ -132,5 +133,53 @@ function line() {
 
     if (counter > (timepernote/20)) {
         clearInterval(interval);
+    }
+}
+
+var blob, recorder = null;
+var chunks = [];
+
+function startRecording(){
+    const canvasStream = canvas.captureStream(20);
+    const audioDestination = audioCtx.createMediaStreamDestination();
+    gainNode.connect(audioDestination);
+    const combinedStream = new MediaStream();
+
+    canvasStream.getVideoTracks().forEach(track => combinedStream.addTrack(track));
+    audioDestination.stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+
+    recorder = new MediaRecorder(combinedStream, {mimeType: 'video/webm' });
+
+    recorder.ondataavailable = e => {
+        if (e.data.size > 0) {
+        chunks.push(e.data);
+        }
+    };
+
+
+    recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'recording.webm';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    recorder.start();
+}
+
+const recording_toggle = document.getElementById("record");
+var is_recording = false;
+function toggle(){
+    is_recording = !is_recording;
+    if(is_recording) {
+        recording_toggle.innerHTML = "Stop Recording";
+        startRecording();
+    }
+    else {
+        recording_toggle.innerHTML = "Start Recording";
+        recorder.stop();
     }
 }

@@ -7,22 +7,24 @@
 </head>
 <body>
     <div id="container">  
+        <h1>hafsah's oscillart project</h1>
         <canvas id="canvas">
-            
         </canvas>  
+            <input type="text" id="input">
+        <button id="submit" onclick="handle()">Submit</button>
+        <input type="color" id="color1" value="#ff0000">
+        <input type="color" id="color2" value="#0000ff">
+        <input type="range" min="1" max="100" value="100" id="vol_slider">
+        <label for="waveform">Waveform:</label>
+        <select id="waveform">
+            <option value="sine">Sine</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="sawtooth">Sawtooth</option>
+        </select>
+        <button id="record" onclick="toggle()">Start Recording</button>
     </div>
-    <input type="text" id="input">
-    <button id="submit" onclick="handle()">Submit</button>
-    <input type="color" id="color1" value="#ff0000">
-    <input type="color" id="color2" value="#0000ff">
-    <input type="range" min="1" max="100" value="100" id="vol_slider">
-    <label for="waveform">Waveform:</label>
-    <select id="waveform">
-        <option value="sine">Sine</option>
-        <option value="square">Square</option>
-        <option value="triangle">Triangle</option>
-        <option value="sawtooth">Sawtooth</option>
-    </select>
+
     <script src="main.js"></script>
 </body>
 </html>

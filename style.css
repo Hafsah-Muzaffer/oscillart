@@ -4,3 +4,16 @@
     width: 900px;
     margin-bottom: 2em;
 }
+
+#container {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 10px;
+    color:rgb(4, 58, 68);
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #fce4e4;
+}
